@@ -37,6 +37,19 @@ class WarehouseRequired(frappe.ValidationError):
 
 
 class SalesOrder(SellingController):
+	@frappe.whitelist()
+	def frm_call(self,msg):
+		#retrieve work orders according to passed sale order and return the object
+		doc = frappe.db.get_list('Work Order', filters={
+    		'sales_order': ["=", msg]
+		})
+
+		return doc
+
+	def before_submit(self):
+		doc = frappe.get_doc('Work Order', 'MFG-WO-2022-00001')
+		frappe.msgprint(_("The First Name is {0}").format(doc.sales_order))
+
 	def __init__(self, *args, **kwargs):
 		super(SalesOrder, self).__init__(*args, **kwargs)
 
@@ -194,7 +207,7 @@ class SalesOrder(SellingController):
 		)
 
 		if cint(frappe.db.get_single_value("Selling Settings", "maintain_same_sales_rate")):
-			self.validate_rate_with_reference_doc([["Quotation", "prevdoc_docname", "quotation_item"]])
+			self.validate_rate_with_reference_doc([["Quotation", "prev_docname", "quotation_item"]])
 
 	def update_enquiry_status(self, prevdoc, flag):
 		enq = frappe.db.sql(
@@ -208,7 +221,7 @@ class SalesOrder(SellingController):
 		for quotation in set(d.prevdoc_docname for d in self.get("items")):
 			if quotation:
 				doc = frappe.get_doc("Quotation", quotation)
-				if doc.docstatus.is_cancelled():
+				if doc.docstatus == 2:
 					frappe.throw(_("Quotation {0} is cancelled").format(quotation))
 
 				doc.set_status(update=True)
@@ -1024,15 +1037,6 @@ def make_purchase_order(source_name, selected_items=None, target_doc=None):
 	]
 	items_to_map = list(set(items_to_map))
 
-	def is_drop_ship_order(target):
-		drop_ship = True
-		for item in target.items:
-			if not item.delivered_by_supplier:
-				drop_ship = False
-				break
-
-		return drop_ship
-
 	def set_missing_values(source, target):
 		target.supplier = ""
 		target.apply_discount_on = ""
@@ -1040,14 +1044,8 @@ def make_purchase_order(source_name, selected_items=None, target_doc=None):
 		target.discount_amount = 0.0
 		target.inter_company_order_reference = ""
 		target.shipping_rule = ""
-
-		if is_drop_ship_order(target):
-			target.customer = source.customer
-			target.customer_name = source.customer_name
-			target.shipping_address = source.shipping_address_name
-		else:
-			target.customer = target.customer_name = target.shipping_address = None
-
+		target.customer = ""
+		target.customer_name = ""
 		target.run_method("set_missing_values")
 		target.run_method("calculate_taxes_and_totals")
 
