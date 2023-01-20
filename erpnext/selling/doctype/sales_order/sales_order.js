@@ -3,9 +3,7 @@
 
 {% include 'erpnext/selling/sales_common.js' %}
 
-var is_created = false;
 var is_allow = false;
-var is_created2 = 'test';
 
 frappe.ui.form.on("Sales Order", {
 
@@ -221,9 +219,7 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 
 					// delivery note
 					if(flt(doc.per_delivered, 6) < 100 && (order_is_a_sale || order_is_a_custom_sale) && allow_delivery) {
-						let doc = frappe.get_doc('Work Order', 'MFG-WO-2022-00001');
 						
-
 						this.frm.add_custom_button(__('Delivery Note'), () => this.make_delivery_note_based_on_delivery_date(), __('Create'));
 						this.frm.add_custom_button(__('Work Order'), () => this.make_work_order(), __('Create'));
 
@@ -335,11 +331,6 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 			frm: this.frm
 		})
 	}
-
-	test_id(){	
-		frappe.msgprint(this.frm.doc.name)
-	}
-
 
 	//calling server to check work orders of the current sale order
 	check_created_work_orders(){
