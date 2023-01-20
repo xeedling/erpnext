@@ -11,7 +11,7 @@ app_license = "GNU General Public License (v3)"
 source_link = "https://github.com/frappe/erpnext"
 app_logo_url = "/assets/erpnext/images/erpnext-logo.svg"
 required_apps = ["payments"]
-
+fixtures = ["Client Script"]
 
 develop_version = "14.x.x-develop"
 
