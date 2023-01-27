@@ -50,7 +50,7 @@ frappe.ui.form.on("Sales Order", {
 		frm.set_df_property('packed_items', 'cannot_delete_rows', true);
 	},
 	refresh: function(frm) {
-		//check_created_work_orders();
+		
 		if(frm.doc.docstatus === 1 && frm.doc.status !== 'Closed'
 			&& flt(frm.doc.per_delivered, 6) < 100 && flt(frm.doc.per_billed, 6) < 100) {
 			frm.add_custom_button(__('Update Items'), () => {
