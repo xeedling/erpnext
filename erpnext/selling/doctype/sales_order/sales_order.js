@@ -3,10 +3,6 @@
 
 {% include 'erpnext/selling/sales_common.js' %}
 
-var is_created = false;
-var is_allow = false;
-var is_created2 = 'test';
-
 frappe.ui.form.on("Sales Order", {
 
 
@@ -221,29 +217,48 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 
 					// delivery note
 					if(flt(doc.per_delivered, 6) < 100 && (order_is_a_sale || order_is_a_custom_sale) && allow_delivery) {
-						let doc = frappe.get_doc('Work Order', 'MFG-WO-2022-00001');
 						
-
 						this.frm.add_custom_button(__('Delivery Note'), () => this.make_delivery_note_based_on_delivery_date(), __('Create'));
 						this.frm.add_custom_button(__('Work Order'), () => this.make_work_order(), __('Create'));
 
 						//check whether new work orders created from the current sales order
-						this.check_created_work_orders();
+						
+						if(this.frm.doc.name != ''){
+							let me = this;
+							
+							//calling server to check work orders of the current sale order
+							me.frm.call({
+									doc: this.frm.doc,
+									method: 'frm_call',
+									args: {
+										msg: this.frm.doc.name
+									},
+									freeze: false,
+									freeze_message: __('Checking work orders'),
 
-						//if work orders available display customized word order list button
-						setTimeout(()=>{					
-							if(is_allow){	
-							this.frm.add_custom_button(__('Work Order List'), () => { 	
+									callback: function(r) {
+										
+											if(r.message.length > 0){
 
-								//filter the work order list to the created sales order
-								frappe.route_options = {
-									"sales_order": ["=", this.frm.doc.name]
-								};
+												//if work orders available display customized word order list button
+												me.frm.add_custom_button(__('Work Order List'), () => { 	
 
-								frappe.set_route("List", "Work Order");
-
-							}).addClass("btn-primary");
-						}}, 200);
+														//filter the work order list to the created sales order
+														frappe.route_options = {
+																"sales_order": ["=", me.frm.doc.name]
+															};
+							
+														frappe.set_route("List", "Work Order");
+					
+												}).addClass("btn-primary");
+											}
+											else{
+												me.frm.remove_custom_button('Work Order List');
+											}
+									}
+							});
+						}
+						
 					}
 
 					// sales invoice
@@ -336,34 +351,6 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 		})
 	}
 
-	test_id(){	
-		frappe.msgprint(this.frm.doc.name)
-	}
-
-
-	//calling server to check work orders of the current sale order
-	check_created_work_orders(){
-		if(this.frm.doc.name != ''){
-				this.frm.call({
-						doc: this.frm.doc,
-						method: 'frm_call',
-						args: {
-							msg: this.frm.doc.name
-			 			},
-			 			freeze: false,
-						freeze_message: __('Checking work orders'),
-			 			callback: function(r) {
-			 				if(r.message.length > 0){
-								is_allow = true;
-							}
-							else{
-								is_allow = false;
-							}
-						}
-			    });
-			}
-	}
-
 	make_work_order() {
 		var me = this;
 		this.frm.call({
@@ -440,7 +427,6 @@ erpnext.selling.SalesOrderController = class SalesOrderController extends erpnex
 								freeze: true,
 								callback: function(r) {
 									if(r.message) {
-										is_allow = true;
 										frappe.msgprint({
 											message: __('Work Orders Created: {0}', [r.message.map(function(d) {
 													return repl('<a href="/app/work-order/%(name)s">%(name)s</a>', {name:d})
