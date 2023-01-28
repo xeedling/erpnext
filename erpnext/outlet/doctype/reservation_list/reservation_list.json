@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2022-12-12 22:29:10.762918",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "name1",
+  "phone",
+  "time",
+  "table",
+  "no_of_seats",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Reservation List",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Phone",
+   "length": 10,
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "table",
+   "fieldtype": "Link",
+   "label": "Table",
+   "options": "Table",
+   "reqd": 1
+  },
+  {
+   "fieldname": "time",
+   "fieldtype": "Time",
+   "label": "Time",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "table.space",
+   "fetch_if_empty": 1,
+   "fieldname": "no_of_seats",
+   "fieldtype": "Int",
+   "label": "No. of Seats",
+   "non_negative": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-01-19 07:08:33.995205",
+ "modified_by": "Administrator",
+ "module": "Outlet",
+ "name": "Reservation List",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
