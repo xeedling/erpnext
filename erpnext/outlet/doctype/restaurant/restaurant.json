@@ -29,8 +29,9 @@
   },
   {
    "fieldname": "phone",
-   "fieldtype": "Int",
-   "label": "Phone"
+   "fieldtype": "Data",
+   "label": "Phone",
+   "length": 10
   },
   {
    "fieldname": "amended_from",
@@ -50,7 +51,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-01-19 06:47:11.686967",
+ "modified": "2023-01-29 12:30:48.202826",
  "modified_by": "Administrator",
  "module": "Outlet",
  "name": "Restaurant",
