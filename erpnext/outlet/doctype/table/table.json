@@ -37,15 +37,16 @@
   {
    "fieldname": "no_of_seats",
    "fieldtype": "Int",
-   "ignore_user_permissions": 1,
-   "label": "No. of Seats"
+   "in_list_view": 1,
+   "label": "No. of Seats",
+   "non_negative": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-01-10 21:49:09.693097",
+ "modified": "2023-01-31 15:00:02.674179",
  "modified_by": "Administrator",
  "module": "Outlet",
  "name": "Table",

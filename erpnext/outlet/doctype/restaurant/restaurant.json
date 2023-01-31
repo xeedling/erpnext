@@ -25,11 +25,13 @@
   {
    "fieldname": "address",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Address"
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Phone",
    "length": 10
   },
@@ -51,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-01-29 12:30:48.202826",
+ "modified": "2023-01-31 15:02:08.309500",
  "modified_by": "Administrator",
  "module": "Outlet",
  "name": "Restaurant",
