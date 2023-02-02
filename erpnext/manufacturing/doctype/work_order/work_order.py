@@ -1271,7 +1271,7 @@ def proceed_work_orders (selected_items):
 					title=_("Insufficient Stock"),
 				)
 
-		se.update({"purpose":"Manufacture", "stock_entry_type":"Manufacture", "to warehouse": stock_entry.to_warehouse, 
+		se.update({"purpose":"Manufacture", "stock_entry_type":"Manufacture", "to warehouse": stock_entry.to_warehouse, "company": stock_entry.company, 
 		"fg_completed_qty": stock_entry.fg_completed_qty, "from_bom": stock_entry.from_bom, "inspection_required": stock_entry.inspection_required, "is_opening": stock_entry.is_opening, "is_return": stock_entry.is_return, 
 		"owner": stock_entry.owner, "per_transferred": stock_entry.per_transferred, "total_incoming_value": stock_entry.total_incoming_value, "total_outgoing_value": stock_entry.total_outgoing_value,
 		"total_additional_costs": stock_entry.total_additional_costs, "total_amount": stock_entry.total_amount, "value_difference": stock_entry.value_difference, 
