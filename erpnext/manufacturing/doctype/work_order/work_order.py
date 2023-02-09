@@ -1241,6 +1241,60 @@ def make_stock_entry(work_order_id, purpose, qty=None):
 	stock_entry.set_serial_no_batch_for_finished_good()
 	return stock_entry.as_dict()
 
+@frappe.whitelist()
+def proceed_work_orders (selected_items):
+	from erpnext.stock.stock_ledger import NegativeStockError
+	parsed_items = frappe.parse_json(selected_items) 
+	out = []
+
+	for p, i in enumerate(parsed_items, 1): 
+		se = frappe.new_doc("Stock Entry")
+		doc = frappe.get_doc("Work Order", i)
+		stock_entry = make_stock_entry(i, "Manufacture", doc.qty)
+
+		for d in stock_entry.get("items"):
+			if(flt(d.actual_qty) < flt(d.transfer_qty)):
+				frappe.throw(
+					_(
+						"{0}: Quantity not available for {2} in warehouse {1}"
+					).format(
+						frappe.bold(i),
+						frappe.bold(d.s_warehouse),
+						frappe.bold(d.item_code),
+					)
+					+ "<br><br>"
+					+ _("Available quantity is {0}, you need {1}").format(
+						frappe.bold(flt(d.actual_qty)), frappe.bold(d.transfer_qty)
+					),
+					NegativeStockError,
+					title=_("Insufficient Stock"),
+				)
+
+		se.update({"purpose":"Manufacture", "stock_entry_type":"Manufacture", "to warehouse": stock_entry.to_warehouse, "company": stock_entry.company,
+		"fg_completed_qty": stock_entry.fg_completed_qty, "from_bom": stock_entry.from_bom, "inspection_required": stock_entry.inspection_required, "is_opening": stock_entry.is_opening, "is_return": stock_entry.is_return, 
+		"owner": stock_entry.owner, "per_transferred": stock_entry.per_transferred, "total_incoming_value": stock_entry.total_incoming_value, "total_outgoing_value": stock_entry.total_outgoing_value,
+		"total_additional_costs": stock_entry.total_additional_costs, "total_amount": stock_entry.total_amount, "value_difference": stock_entry.value_difference, 
+		"use_multi_level_bom": stock_entry.use_multi_level_bom})
+
+		setattr(se, "work_order", i) 
+		setattr(se, "bom_no",stock_entry.bom_no) 
+		
+		for ip in list(stock_entry.items()): 
+			if ip[0] == "items":
+				se.update({"items":ip[1]})
+
+		se.insert()
+		se.flags.ignore_mandatory = True 
+		se.save()
+		out.append(se)
+		show_insert_progress(parsed_items, 'Creating Stock Entries', p, i)
+
+	return [p.name for p in out]
+
+def show_insert_progress(docnames, message, i, description):
+	n = len(docnames)
+	if n >= 10:
+		frappe.publish_progress(float(i) * 100 / n, title=message, description=description)	
 
 @frappe.whitelist()
 def get_default_warehouse():
