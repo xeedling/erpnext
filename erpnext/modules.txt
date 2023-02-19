@@ -20,4 +20,3 @@ Telephony
 Bulk Transaction
 E-commerce
 Subcontracting
-Outlet
