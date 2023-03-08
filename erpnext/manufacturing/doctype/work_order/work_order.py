@@ -1253,22 +1253,23 @@ def proceed_work_orders (selected_items):
 		stock_entry = make_stock_entry(i, "Manufacture", doc.qty)
 
 		for d in stock_entry.get("items"):
-			if(flt(d.actual_qty) < flt(d.transfer_qty)):
-				frappe.throw(
-					_(
-						"{0}: Quantity not available for {2} in warehouse {1}"
-					).format(
-						frappe.bold(i),
-						frappe.bold(d.s_warehouse),
-						frappe.bold(d.item_code),
+			if(d.is_finished_item == 0):
+				if(flt(d.actual_qty) < flt(d.transfer_qty)):
+					frappe.throw(
+						_(
+							"{0}: Quantity not available for {2} in warehouse {1}"
+						).format(
+							frappe.bold(i),
+							frappe.bold(d.s_warehouse),
+							frappe.bold(d.item_code),
+						)
+						+ "<br><br>"
+						+ _("Available quantity is {0}, you need {1}").format(
+							frappe.bold(flt(d.actual_qty)), frappe.bold(d.transfer_qty)
+						),
+						NegativeStockError,
+						title=_("Insufficient Stock"),
 					)
-					+ "<br><br>"
-					+ _("Available quantity is {0}, you need {1}").format(
-						frappe.bold(flt(d.actual_qty)), frappe.bold(d.transfer_qty)
-					),
-					NegativeStockError,
-					title=_("Insufficient Stock"),
-				)
 
 		se.update({"purpose":"Manufacture", "stock_entry_type":"Manufacture", "to warehouse": stock_entry.to_warehouse, "company": stock_entry.company,
 		"fg_completed_qty": stock_entry.fg_completed_qty, "from_bom": stock_entry.from_bom, "inspection_required": stock_entry.inspection_required, "is_opening": stock_entry.is_opening, "is_return": stock_entry.is_return, 
